@@ -35,7 +35,7 @@ public final class KeyBridgeConnectClient {
             URLQueryItem(name: "provider", value: provider.rawValue),
             URLQueryItem(name: "app_name", value: appName),
             URLQueryItem(name: "app_id", value: appID),
-            URLQueryItem(name: "callback", value: "\(callbackScheme)://kb-callback")
+            URLQueryItem(name: "callback", value: "\(callbackScheme)://callback")
         ]
 
         guard let url = components.url else { return }
@@ -45,7 +45,7 @@ public final class KeyBridgeConnectClient {
     @discardableResult
     public func handleCallback(_ url: URL) -> Bool {
         guard url.scheme == callbackScheme,
-              url.host == "kb-callback" else {
+              url.host == "callback" else {
             return false
         }
 

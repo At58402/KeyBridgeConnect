@@ -19,7 +19,7 @@ final class KeyBridgeConnectTests: XCTestCase {
 
         let future = Date().addingTimeInterval(60 * 60 * 24)
         let formatter = ISO8601DateFormatter()
-        let urlString = "testapp://kb-callback?token=TEST-TOKEN-ID&provider=openai&expires_at=\(formatter.string(from: future))"
+        let urlString = "testapp://callback?token=TEST-TOKEN-ID&provider=openai&expires_at=\(formatter.string(from: future))"
         let url = URL(string: urlString)!
 
         let handled = client.handleCallback(url)
@@ -44,7 +44,7 @@ final class KeyBridgeConnectTests: XCTestCase {
             }
         }
 
-        let url = URL(string: "testapp://kb-callback?error=user_denied&provider=anthropic")!
+        let url = URL(string: "testapp://callback?error=user_denied&provider=anthropic")!
         client.handleCallback(url)
 
         XCTAssertEqual(receivedError, .userDenied)
