@@ -22,13 +22,6 @@ public final class KeyBridgeConnectClient {
     ) {
         pendingCompletion = completion
 
-        guard let testURL = URL(string: "\(Self.keybridgeScheme)://"),
-              UIApplication.shared.canOpenURL(testURL) else {
-            pendingCompletion = nil
-            completion(.failure(.keybridgeNotInstalled))
-            return
-        }
-
         var components = URLComponents()
         components.scheme = Self.keybridgeScheme
         components.host = "connect"
