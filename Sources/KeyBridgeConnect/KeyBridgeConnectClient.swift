@@ -52,8 +52,10 @@ public final class KeyBridgeConnectClient {
 
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let queryItems = components.queryItems else {
-            pendingCompletion?(.failure(.invalidCallback))
-            pendingCompletion = nil
+            DispatchQueue.main.async {
+                self.pendingCompletion?(.failure(.invalidCallback))
+                self.pendingCompletion = nil
+            }
             return true
         }
 
@@ -62,8 +64,10 @@ public final class KeyBridgeConnectClient {
         }
 
         if let error = value(for: "error") {
-            pendingCompletion?(.failure(error == "user_denied" ? .userDenied : .invalidCallback))
-            pendingCompletion = nil
+            DispatchQueue.main.async {
+                self.pendingCompletion?(.failure(error == "user_denied" ? .userDenied : .invalidCallback))
+                self.pendingCompletion = nil
+            }
             return true
         }
 
@@ -72,19 +76,25 @@ public final class KeyBridgeConnectClient {
               let provider = KeyBridgeProvider(rawValue: providerRaw),
               let expiresAtString = value(for: "expires_at"),
               let expiresAt = ISO8601DateFormatter().date(from: expiresAtString) else {
-            pendingCompletion?(.failure(.invalidCallback))
-            pendingCompletion = nil
+            DispatchQueue.main.async {
+                self.pendingCompletion?(.failure(.invalidCallback))
+                self.pendingCompletion = nil
+            }
             return true
         }
 
         guard Date() < expiresAt else {
-            pendingCompletion?(.failure(.tokenExpired))
-            pendingCompletion = nil
+            DispatchQueue.main.async {
+                self.pendingCompletion?(.failure(.tokenExpired))
+                self.pendingCompletion = nil
+            }
             return true
         }
 
-        pendingCompletion?(.success(KeyBridgeToken(id: tokenID, provider: provider, expiresAt: expiresAt)))
-        pendingCompletion = nil
+        DispatchQueue.main.async {
+            self.pendingCompletion?(.success(KeyBridgeToken(id: tokenID, provider: provider, expiresAt: expiresAt)))
+            self.pendingCompletion = nil
+        }
         return true
     }
 }

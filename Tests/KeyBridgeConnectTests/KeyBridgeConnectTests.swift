@@ -10,11 +10,14 @@ final class KeyBridgeConnectTests: XCTestCase {
             callbackScheme: "testapp"
         )
 
+        let exp = expectation(description: "completion")
+
         var receivedToken: KeyBridgeToken?
         client.pendingCompletion = { result in
             if case .success(let token) = result {
                 receivedToken = token
             }
+            exp.fulfill()
         }
 
         let future = Date().addingTimeInterval(60 * 60 * 24)
@@ -24,6 +27,7 @@ final class KeyBridgeConnectTests: XCTestCase {
 
         let handled = client.handleCallback(url)
 
+        waitForExpectations(timeout: 1.0)
         XCTAssertTrue(handled)
         XCTAssertNotNil(receivedToken)
         XCTAssertEqual(receivedToken?.provider, .openAI)
@@ -37,16 +41,20 @@ final class KeyBridgeConnectTests: XCTestCase {
             callbackScheme: "testapp"
         )
 
+        let exp = expectation(description: "completion")
+
         var receivedError: ConnectError?
         client.pendingCompletion = { result in
             if case .failure(let error) = result {
                 receivedError = error
             }
+            exp.fulfill()
         }
 
         let url = URL(string: "testapp://callback?error=user_denied&provider=anthropic")!
         client.handleCallback(url)
 
+        waitForExpectations(timeout: 1.0)
         XCTAssertEqual(receivedError, .userDenied)
     }
 }
