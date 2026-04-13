@@ -36,6 +36,29 @@ public final class KeyBridgeConnectClient {
         UIApplication.shared.open(url)
     }
 
+    public func refreshToken(
+        existingTokenID: String,
+        callbackScheme: String,
+        completion: @escaping (Result<KeyBridgeToken, ConnectError>) -> Void
+    ) {
+        // Build keybridge://refresh?token=XXX&callback=callbackScheme://callback
+        var components = URLComponents()
+        components.scheme = "keybridge"
+        components.host = "refresh"
+        components.queryItems = [
+            URLQueryItem(name: "token", value: existingTokenID),
+            URLQueryItem(name: "callback", value: "\(callbackScheme)://callback")
+        ]
+        guard let url = components.url,
+              let keybridgeProbe = URL(string: "keybridge://"),
+              UIApplication.shared.canOpenURL(keybridgeProbe) else {
+            completion(.failure(.keybridgeNotInstalled))
+            return
+        }
+        pendingCompletion = completion
+        UIApplication.shared.open(url)
+    }
+
     @discardableResult
     public func handleCallback(_ url: URL) -> Bool {
         guard url.scheme == callbackScheme,

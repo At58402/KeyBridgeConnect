@@ -8,6 +8,13 @@ public struct KeyBridgeToken: Equatable {
     public var isValid: Bool {
         Date() < expiresAt
     }
+
+    // Returns true if the token expires within the next 30 minutes.
+    // Call refreshToken when this returns true to get a new token silently.
+    public var isExpiringSoon: Bool {
+        let thirtyMinutes: TimeInterval = 30 * 60
+        return Date().addingTimeInterval(thirtyMinutes) >= expiresAt
+    }
 }
 
 public enum KeyBridgeProvider: String, CaseIterable {
