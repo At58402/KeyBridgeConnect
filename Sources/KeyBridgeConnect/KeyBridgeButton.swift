@@ -48,6 +48,7 @@ extension KeyBridgeProvider {
         switch self {
         case .openAI: return "OpenAI"
         case .anthropic: return "Anthropic"
+        case .gemini: return "Google Gemini"
         }
     }
 }
